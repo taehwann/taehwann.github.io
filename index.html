@@ -26,33 +26,38 @@
       'articles/article1.js',
       'articles/article2.js',
       'articles/article3.js',
-      // Add more files here
     ];
 
     const mainPage = document.getElementById("main-page");
     const articlePage = document.getElementById("article-page");
     const articleContainer = document.getElementById("article-container");
     const articleGrid = document.getElementById("article-grid");
+    const backBtn = document.querySelector(".back-btn");
 
     function goBack() {
+      location.hash = "";
       articlePage.style.display = "none";
       mainPage.style.display = "block";
       articleContainer.innerHTML = "";
     }
 
-    document.querySelector(".back-btn").onclick = goBack;
+    backBtn.onclick = goBack;
 
     async function loadArticle(file) {
       mainPage.style.display = "none";
       articlePage.style.display = "block";
 
-      const module = await import(`./${file}`);
-      const { layout, content, runDemo } = module;
+      try {
+        const module = await import(`./${file}?v=${Date.now()}`);
+        const { layout, content, runDemo } = module;
 
-      if (layout === "simple") {
-        renderSimple(content);
-      } else if (layout === "split") {
-        renderSplit(content, runDemo);
+        if (layout === "simple") {
+          renderSimple(content);
+        } else if (layout === "split") {
+          renderSplit(content, runDemo);
+        }
+      } catch (err) {
+        articleContainer.innerHTML = `<p>Error loading article.</p>`;
       }
     }
 
@@ -96,18 +101,37 @@
       };
     }
 
-    for (const file of articleFiles) {
-      const meta = await loadMetadata(file);
-      const card = document.createElement("div");
-      card.className = "card";
-      card.dataset.file = meta.file;
-      card.innerHTML = `
-        <img src="${meta.image}" alt="${meta.title}" />
-        <h2>${meta.title}</h2>
-      `;
-      card.onclick = () => loadArticle(meta.file);
-      articleGrid.appendChild(card);
+    async function buildGrid() {
+      for (const file of articleFiles) {
+        const meta = await loadMetadata(file);
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.file = meta.file;
+        card.innerHTML = `
+          <img src="${meta.image}" alt="${meta.title}" />
+          <h2>${meta.title}</h2>
+        `;
+        card.onclick = () => {
+          location.hash = meta.file;
+        };
+        articleGrid.appendChild(card);
+      }
     }
+
+    async function checkHash() {
+      const file = decodeURIComponent(location.hash.slice(1));
+      if (articleFiles.includes(file)) {
+        await loadArticle(file);
+      } else {
+        goBack();
+      }
+    }
+
+    window.addEventListener("hashchange", checkHash);
+    window.addEventListener("DOMContentLoaded", async () => {
+      await buildGrid();
+      checkHash();
+    });
   </script>
 </body>
 </html>
