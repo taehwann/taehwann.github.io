@@ -1,0 +1,110 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 1rem;
+    background: #f0f0f0;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .card h2 {
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+  }
+  
+  #article-page {
+    display: none;
+  }
+  
+  .article-text {
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+  }
+  
+  canvas {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  button.back-btn {
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    background: #333;
+    color: white;
+    cursor: pointer;
+  }
+  
+/* Base split layout (side-by-side) */
+.split-fixed-layout {
+    display: flex;
+    gap: 1rem;
+    height: calc(100vh - 3rem);
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .left-pane-fixed {
+    flex: 2;
+    min-width: 300px;
+    position: sticky;
+    top: 1rem;
+    height: fit-content;
+  }
+  
+  .right-pane-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 100%;
+  }
+  
+  /* Responsive: stack vertically on small screens */
+  @media (max-width: 768px) {
+    .split-fixed-layout {
+      flex-direction: column;
+      height: auto;
+    }
+  
+    .left-pane-fixed {
+      position: static;
+      width: 100%;
+    }
+  
+    .right-pane-scrollable {
+      max-height: none;
+      overflow: visible;
+    }
+  }
+  

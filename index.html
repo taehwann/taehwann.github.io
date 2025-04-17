@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dynamic Article Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="main-page">
+    <h1>Articles</h1>
+    <div class="grid" id="article-grid"></div>
+  </div>
+
+  <div id="article-page">
+    <button class="back-btn">← Back</button>
+    <div id="article-container"></div>
+  </div>
+
+  <script type="module">
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+    import katex from "https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.mjs";
+
+    const articleFiles = [
+      'articles/article1.js',
+      'articles/article2.js',
+      'articles/article3.js',
+      // Add more files here
+    ];
+
+    const mainPage = document.getElementById("main-page");
+    const articlePage = document.getElementById("article-page");
+    const articleContainer = document.getElementById("article-container");
+    const articleGrid = document.getElementById("article-grid");
+
+    function goBack() {
+      articlePage.style.display = "none";
+      mainPage.style.display = "block";
+      articleContainer.innerHTML = "";
+    }
+
+    document.querySelector(".back-btn").onclick = goBack;
+
+    async function loadArticle(file) {
+      mainPage.style.display = "none";
+      articlePage.style.display = "block";
+
+      const module = await import(`./${file}`);
+      const { layout, content, runDemo } = module;
+
+      if (layout === "simple") {
+        renderSimple(content);
+      } else if (layout === "split") {
+        renderSplit(content, runDemo);
+      }
+    }
+
+    function renderSimple(markdown) {
+      const html = marked.parse(markdown);
+      articleContainer.innerHTML = `<div class="article-text">${html}</div>`;
+      renderLatex(articleContainer);
+    }
+
+    function renderSplit(markdown, runDemoFn) {
+      articleContainer.innerHTML = `
+        <div class="split-fixed-layout">
+          <div class="left-pane-fixed">
+            <canvas id="gpu-canvas" width="600" height="400"></canvas>
+          </div>
+          <div class="right-pane-scrollable">
+            <div class="article-text">${marked.parse(markdown)}</div>
+          </div>
+        </div>
+      `;
+      renderLatex(articleContainer);
+      runDemoFn?.(document.getElementById("gpu-canvas"));
+    }
+
+    function renderLatex(container) {
+      container.innerHTML = container.innerHTML
+        .replace(/\$\$([\s\S]+?)\$\$/g, (_, eq) =>
+          katex.renderToString(eq, { throwOnError: false, displayMode: true })
+        )
+        .replace(/\\\((.+?)\\\)/g, (_, eq) =>
+          katex.renderToString(eq, { throwOnError: false })
+        );
+    }
+
+    async function loadMetadata(filePath) {
+      const mod = await import(`./${filePath}`);
+      return {
+        file: filePath,
+        title: mod.title ?? filePath,
+        image: mod.image ?? `https://placehold.co/600x400?text=${encodeURIComponent(filePath)}`,
+      };
+    }
+
+    for (const file of articleFiles) {
+      const meta = await loadMetadata(file);
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.file = meta.file;
+      card.innerHTML = `
+        <img src="${meta.image}" alt="${meta.title}" />
+        <h2>${meta.title}</h2>
+      `;
+      card.onclick = () => loadArticle(meta.file);
+      articleGrid.appendChild(card);
+    }
+  </script>
+</body>
+</html>
