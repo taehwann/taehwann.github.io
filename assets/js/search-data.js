@@ -44,7 +44,18 @@ ninja.data = [{
               handler: () => {
                 window.location.href = "/blog/";
               },
-            },{id: "post-test-post-1",
+            },{id: "post-testing-gif-thumbnails-math-and-three-js",
+        
+          title: "Testing GIF Thumbnails, Math, and Three.js",
+        
+        description: "A demonstration of a physics post with math equations and an interactive wireframe cube",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/test-post-3d/";
+          
+        },
+      },{id: "post-test-post-1",
         
           title: "Test Post 1",
         
