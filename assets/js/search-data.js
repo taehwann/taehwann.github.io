@@ -44,7 +44,29 @@ ninja.data = [{
               handler: () => {
                 window.location.href = "/blog/";
               },
-            },{id: "post-a-post-with-plotly-js",
+            },{id: "post-test-post-1",
+        
+          title: "Test Post 1",
+        
+        description: "A newer test post.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/test-post-1/";
+          
+        },
+      },{id: "post-test-post-2",
+        
+          title: "Test Post 2",
+        
+        description: "An older test post.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/test-post-2/";
+          
+        },
+      },{id: "post-a-post-with-plotly-js",
         
           title: "a post with plotly.js",
         
@@ -463,6 +485,11 @@ ninja.data = [{
           description: "an other project with a background image and giscus comments",
           section: "Projects",handler: () => {
               window.location.href = "/projects/8_project/";
+            },},{id: "projects-test-project",
+          title: 'Test Project',
+          description: "A test project to verify the new linking logic",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/99_test_project/";
             },},{id: "projects-project-9",
           title: 'project 9',
           description: "another project with an image 🎉",
