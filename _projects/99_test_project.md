@@ -5,6 +5,7 @@ description: A test project to verify the new linking logic
 importance: 1
 category: work
 project_id: test_project_id
+img: assets/img/publication_preview/wave-mechanics.gif
 repositories:
   - taehwann/taehwann.github.io
 giscus_comments: true
