@@ -22,6 +22,12 @@ jobs:
         with:
           fetch-depth: 0 # OR "2" -> To retrieve the preceding commit.
 
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v4
+
+      - name: Install Prettier 💾
+        run: npm install --save-dev --save-exact prettier @shopify/prettier-plugin-liquid
+
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46
@@ -42,6 +48,19 @@ jobs:
             ./gh-md-toc --indent 2 --insert --no-backup --hide-footer $file
           done
           rm gh-md-toc
+
+      - name: Prettier Format 🔎
+        id: prettier
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            # Only run prettier on existing markdown files
+            if [[ "$file" == *.md ]] && [[ -f "$file" ]]; then
+              npx prettier "$file" --write
+            fi
+          done
 
       - name: Commit changes
         if: steps.changed-files.outputs.any_changed == 'true'
