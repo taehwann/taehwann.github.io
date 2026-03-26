@@ -80,24 +80,40 @@ ninja.data = [
   {%- endif -%}
   {%- for collection in site.collections -%}
     {%- if collection.label != 'posts' -%}
-      {%- for item in collection.docs -%}
-        {
-          {%- if item.inline -%}
-            {%- assign title = item.content | newline_to_br | replace: "<br />", " " | replace: "<br/>", " " | strip_html | strip_newlines | escape | strip -%}
-          {%- else -%}
-            {%- assign title = item.title | newline_to_br | replace: "<br />", " " | replace: "<br/>", " " | strip_html | strip_newlines | escape | strip -%}
-          {%- endif -%}
-          id: "{{ collection.label }}-{{ title | slugify }}",
-          title: '{{ title | escape | emojify | truncatewords: 13 }}',
-          description: "{{ item.description | strip_html | strip_newlines | escape | strip }}",
-          section: "{{ collection.label | capitalize }}",
-          {%- unless item.inline -%}
-            handler: () => {
-              window.location.href = "{{ item.url | relative_url }}";
+      {%- assign skip_collection = false -%}
+      {%- if collection.label == 'books' -%}
+        {%- assign books_page = site.pages | where: "permalink", "/books/" | first -%}
+        {%- if books_page != blank and books_page.nav == false -%}{%- assign skip_collection = true -%}{%- endif -%}
+      {%- elsif collection.label == 'teachings' -%}
+        {%- assign teachings_page = site.pages | where: "permalink", "/teaching/" | first -%}
+        {%- if teachings_page != blank and teachings_page.nav == false -%}{%- assign skip_collection = true -%}{%- endif -%}
+      {%- else -%}
+        {%- capture collection_url -%}/{{ collection.label }}/{%- endcapture -%}
+        {%- assign collection_page = site.pages | where: "permalink", collection_url | first -%}
+        {%- if collection_page != blank and collection_page.nav == false -%}{%- assign skip_collection = true -%}{%- endif -%}
+      {%- endif -%}
+      {%- unless skip_collection -%}
+        {%- for item in collection.docs -%}
+          {%- unless item.nav == false or item.search == false -%}
+            {
+              {%- if item.inline -%}
+                {%- assign title = item.content | newline_to_br | replace: "<br />", " " | replace: "<br/>", " " | strip_html | strip_newlines | escape | strip -%}
+              {%- else -%}
+                {%- assign title = item.title | newline_to_br | replace: "<br />", " " | replace: "<br/>", " " | strip_html | strip_newlines | escape | strip -%}
+              {%- endif -%}
+              id: "{{ collection.label }}-{{ title | slugify }}",
+              title: '{{ title | escape | emojify | truncatewords: 13 }}',
+              description: "{{ item.description | strip_html | strip_newlines | escape | strip }}",
+              section: "{{ collection.label | capitalize }}",
+              {%- unless item.inline -%}
+                handler: () => {
+                  window.location.href = "{{ item.url | relative_url }}";
+                },
+              {%- endunless -%}
             },
           {%- endunless -%}
-        },
-      {%- endfor -%}
+        {%- endfor -%}
+      {%- endunless -%}
     {%- endif -%}
   {%- endfor -%}
   {%- if site.socials_in_search -%}
@@ -120,6 +136,10 @@ ninja.data = [
           {%- assign social_title = "Bluesky" -%}
           {%- capture social_url %}"{{ social[1] }}"{% endcapture -%}
         {%- when "cv_pdf" -%}
+          {%- assign cv_page = site.pages | where: "permalink", "/cv/" | first -%}
+          {%- if cv_page and cv_page.nav == false -%}
+            {%- continue -%}
+          {%- endif -%}
           {%- assign social_id = "social-cv" -%}
           {%- assign social_title = "CV" -%}
           {%- capture social_url %}"{{ social[1] | relative_url }}"{% endcapture -%}
