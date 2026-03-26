@@ -87,7 +87,7 @@ html[data-theme="dark"] {
   --global-footer-text-color: #{v.$grey-color-dark};
   --global-footer-link-color: #{v.$black-color};
   --global-distill-app-color: #{v.$grey-color-light};
-  --global-divider-color: rgba(0, 0, 0, 0.15);
+  --global-divider-color: rgb(198, 198, 198);
   --global-card-bg-color: #{v.$grey-900};
   --global-back-to-top-bg-color: rgba(
     #{color.channel(v.$white-color, "red", v.$space: rgb)},
