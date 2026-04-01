@@ -67,7 +67,7 @@ function initializeCookieConsent() {
       translations: {
         en: {
           consentModal: {
-            title: 'We use cookies',
+            title: 'This website uses cookies',
             description: 'This website uses cookies to improve your experience and analyze site traffic. By clicking "Accept all", you consent to our use of cookies.',
             acceptAllBtn: 'Accept all',
             acceptNecessaryBtn: 'Reject all',
@@ -82,7 +82,7 @@ function initializeCookieConsent() {
             sections: [
               {
                 title: 'Cookie usage',
-                description: 'We use cookies to ensure the basic functionalities of the website and to enhance your online experience. You can choose for each category to opt-in/out whenever you want.'
+                description: 'This website uses cookies to ensure the basic functionalities of the website and to enhance your online experience. You can choose for each category to opt-in/out whenever you want.'
               },
               {
                 title: 'Strictly Necessary cookies',
