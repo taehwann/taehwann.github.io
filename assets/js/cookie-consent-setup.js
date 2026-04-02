@@ -126,7 +126,7 @@ function initializeCookieConsent() {
    */
   function updateConsentMode() {
     // Use the CookieConsent API directly — it's reliable across all callbacks
-    var analyticsAccepted = window.CookieConsent && window.CookieConsent.getCategories().analytics;
+    var analyticsAccepted = window.CookieConsent && window.CookieConsent.acceptedCategory('analytics');
 
     gtag('consent', 'update', {
       'analytics_storage': analyticsAccepted ? 'granted' : 'denied',
