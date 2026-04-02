@@ -104,14 +104,19 @@ function initializeCookieConsent() {
       }
     },
 
-    // Callback when user accepts/rejects consent
-    onFirstConsent: function(consentData) {
-      updateConsentMode(consentData);
+    // Callback on every page load where consent already exists
+    onConsent: function() {
+      updateConsentMode();
+    },
+
+    // Callback when user accepts/rejects consent for the first time
+    onFirstConsent: function() {
+      updateConsentMode();
     },
 
     // Callback when user changes preferences
-    onChange: function(consentData) {
-      updateConsentMode(consentData);
+    onChange: function() {
+      updateConsentMode();
     }
   });
 
@@ -119,35 +124,21 @@ function initializeCookieConsent() {
    * Update Google Consent Mode based on user preferences
    * This ensures Google services respect user choices
    */
-  function updateConsentMode(consentData) {
-    // Handle both callback data structures
-    var categories = consentData.categories || consentData;
-
-    // Ensure categories is an object
-    if (!categories || typeof categories !== 'object') {
-      console.warn('Invalid consent data structure:', consentData);
-      return;
-    }
+  function updateConsentMode() {
+    // Use the CookieConsent API directly — it's reliable across all callbacks
+    var analyticsAccepted = window.CookieConsent && window.CookieConsent.getCategories().analytics;
 
     gtag('consent', 'update', {
-      'analytics_storage': categories.analytics ? 'granted' : 'denied',
+      'analytics_storage': analyticsAccepted ? 'granted' : 'denied',
       'ad_storage': 'denied',
       'functionality_storage': 'denied',
       'personalization_storage': 'denied'
     });
 
-    if (categories.analytics) {
+    if (analyticsAccepted) {
       console.debug('✓ Analytics consent granted - tracking enabled for all providers');
-      // Analytics scripts with data-category="analytics" will automatically run
-      // when the library re-evaluates them after this consent update
     } else {
       console.debug('✗ Analytics consent denied - no tracking data collected');
-      // Analytics scripts are already blocked by the library (type="text/plain")
-      // No tracking will occur for:
-      // - Cronitor RUM
-      // - Google Analytics (GA4)
-      // - OpenPanel Analytics
-      // - Pirsch Analytics
     }
   }
 }
