@@ -13,12 +13,20 @@ giscus_comments: true
 <div id="huffman-app" markdown="0">
   <textarea id="huff-input" rows="6" style="width:100%;font-family:monospace;font-size:0.9rem;padding:0.5rem;border-radius:6px;border:1px solid #888;background:transparent;color:inherit;resize:vertical;" placeholder="Type or paste text here..."></textarea>
 
-  <div style="margin-top:0.75rem;display:flex;gap:0.5rem;">
+  <div style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
     <button id="btn-encode" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;">Encode</button>
     <button id="btn-decode" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;">Decode</button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
+      <span style="font-size:0.85rem;">Upload file (.txt / .huff):</span>
+      <input type="file" id="huff-file-upload" accept=".txt,.huff" style="font-size:0.85rem;" />
+    </div>
   </div>
 
   <div id="huff-output" style="margin-top:1rem;padding:0.75rem;border-radius:6px;border:1px solid #888;min-height:3rem;max-height:15rem;overflow-y:auto;word-break:break-all;white-space:pre-wrap;font-family:monospace;font-size:0.85rem;"></div>
+  
+  <div style="margin-top:0.75rem;">
+    <button id="btn-download" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;display:none;">Download .txt</button>
+  </div>
 </div>
 
 <script>
@@ -27,6 +35,11 @@ giscus_comments: true
   const output = document.getElementById("huff-output");
   const btnEncode = document.getElementById("btn-encode");
   const btnDecode = document.getElementById("btn-decode");
+  const fileUpload = document.getElementById("huff-file-upload");
+  const btnDownload = document.getElementById("btn-download");
+  
+  let currentOutputData = "";
+  let currentOutputExt = "";
 
   // --- Step 1: Count character frequencies ---
   // Returns an object like { 'a': 5, 'b': 2, ... }
@@ -134,6 +147,11 @@ giscus_comments: true
     console.log("serialized:", serialized);
 
     output.textContent = serialized;
+
+    currentOutputData = serialized;
+    currentOutputExt = "txt";
+    btnDownload.textContent = "Download .txt";
+    btnDownload.style.display = "inline-block";
   });
 
   btnDecode.addEventListener("click", function () {
@@ -144,6 +162,36 @@ giscus_comments: true
     const decoded = decode(bits, codeTable);
 
     output.textContent = "Decoded: " + decoded;
+
+    currentOutputData = decoded;
+    currentOutputExt = "txt";
+    btnDownload.textContent = "Download .txt";
+    btnDownload.style.display = "inline-block";
+  });
+
+  // Handle file upload
+  fileUpload.addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      input.value = evt.target.result;
+    };
+    reader.readAsText(file);
+  });
+
+  // Handle file download
+  btnDownload.addEventListener("click", function() {
+    if (!currentOutputData) return;
+    const blob = new Blob([currentOutputData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "output." + currentOutputExt;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   });
 })();
 </script>
@@ -153,5 +201,5 @@ giscus_comments: true
 ## Future Steps
 
 - [ ] **Binary file output** — pack the bitstream into actual bytes (`Uint8Array`) instead of ASCII `"0"`/`"1"` characters. Store padding bit count in the header so the last byte can be decoded correctly.
-- [ ] **File download/upload** — add a "Download .huff" button and a file input to upload `.huff` files for decoding.
+- [x] **File download/upload** — add a "Download .huff" button and a file input to upload `.txt` files for decoding.
 - [ ] **Compression stats** — show original size vs encoded size and compression ratio.
