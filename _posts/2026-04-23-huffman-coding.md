@@ -10,7 +10,7 @@ giscus_comments: true
 
 ## Huffman Encoder / Decoder
 
-<div id="huffman-app">
+<div id="huffman-app" markdown="0">
   <textarea id="huff-input" rows="6" style="width:100%;font-family:monospace;font-size:0.9rem;padding:0.5rem;border-radius:6px;border:1px solid #888;background:transparent;color:inherit;resize:vertical;" placeholder="Type or paste text here..."></textarea>
 
   <div style="margin-top:0.75rem;display:flex;gap:0.5rem;">
@@ -131,8 +131,11 @@ giscus_comments: true
     console.log("freq:", freq);
     console.log("tree:", JSON.stringify(tree, null, 2));
     const codeTable = buildCodeTable(tree, "", {});
+    console.log("codeTable:", codeTable);
     const encoded = encode(text, codeTable);
+    console.log("encoded:", encoded);
     const serialized = serializeOutput(codeTable, encoded);
+    console.log("serialized:", serialized);
 
     output.textContent = serialized;
   });
