@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/projects/";
           },
-        },{id: "post-testing-gif-thumbnails-math-and-three-js",
+        },{id: "post-file-compression-using-huffman-coding",
+        
+          title: "File Compression Using Huffman Coding",
+        
+        description: "Huffman encoder/decoder from scratch",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/huffman-coding/";
+          
+        },
+      },{id: "post-testing-gif-thumbnails-math-and-three-js",
         
           title: "Testing GIF Thumbnails, Math, and Three.js",
         
