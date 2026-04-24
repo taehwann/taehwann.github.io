@@ -110,8 +110,11 @@
     console.log("freq:", freq);
     console.log("tree:", JSON.stringify(tree, null, 2));
     const codeTable = buildCodeTable(tree, "", {});
+    console.log("codeTable:", codeTable);
     const encoded = encode(text, codeTable);
+    console.log("encoded:", encoded);
     const serialized = serializeOutput(codeTable, encoded);
+    console.log("serialized:", serialized);
 
     output.textContent = serialized;
   });
