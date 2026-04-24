@@ -18,7 +18,7 @@ giscus_comments: true
     <button id="btn-decode" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;">Decode</button>
   </div>
 
-  <pre id="huff-output" style="margin-top:1rem;padding:0.75rem;border-radius:6px;border:1px solid #888;min-height:3rem;white-space:pre-wrap;font-size:0.85rem;"> </pre>
+  <div id="huff-output" style="margin-top:1rem;padding:0.75rem;border-radius:6px;border:1px solid #888;min-height:3rem;white-space:pre-wrap;font-family:monospace;font-size:0.85rem;"></div>
 </div>
 
 <script>
