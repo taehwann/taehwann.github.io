@@ -104,13 +104,9 @@ giscus_comments: true
   //   ---
   //   001001100010
   function serializeOutput(codeTable, encodedBits) {
-    const lines = [];
-    for (const char in codeTable) {
-      lines.push(`${char}:${codeTable[char]}`);
-    }
-    lines.push("---");
-    lines.push(encodedBits);
-    return lines.join("\n");
+    // stringify since there is a chance that the code table contains special characters
+    const header = JSON.stringify(codeTable);
+    return header + "\n---\n" + encodedBits;
   }
 
   // --- Step 7: Parse encoded input ---
