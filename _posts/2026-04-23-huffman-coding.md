@@ -31,26 +31,59 @@ giscus_comments: true
   // --- Step 1: Count character frequencies ---
   // Returns an object like { 'a': 5, 'b': 2, ... }
   function getFrequencies(text) {
-    // TODO: implement
+    const freq = {};
+    for (const char of text) {
+      freq[char] = (freq[char] || 0) + 1;
+    }
+    return freq;
   }
 
   // --- Step 2: Build the Huffman tree ---
   // Takes frequency object, returns tree root node
-  // Node shape: { char, freq, left, right }
+  // Node shape: { char, freq, is_leaf, left, right }
   function buildTree(freq) {
-    // TODO: implement
+    const nodes = Object.entries(freq).map(([c, f]) => ({
+      char: c, freq: f, is_leaf: true, left: null, right: null,
+    }));
+
+    while (nodes.length > 1) {
+      // tiebreaker: smallest char goes left
+      nodes.sort((a, b) => a.freq - b.freq || a.char.localeCompare(b.char));
+      const left = nodes.shift();
+      const right = nodes.shift();
+      nodes.push({
+        char: left.char,
+        freq: left.freq + right.freq,
+        is_leaf: false,
+        left,
+        right,
+      });
+    }
+
+    return nodes[0] || null;
   }
 
   // --- Step 3: Generate code table from tree ---
   // Returns an object like { 'a': '01', 'b': '110', ... }
   function buildCodeTable(node, prefix, table) {
-    // TODO: implement
+    if (node.is_leaf) {
+      table[node.char] = prefix;
+      return table;
+    }
+
+    buildCodeTable(node.left, prefix + '0', table);
+    buildCodeTable(node.right, prefix + '1', table);
+    return table;
   }
 
   // --- Step 4: Encode text using code table ---
   // Returns the encoded binary string
   function encode(text, codeTable) {
-    // TODO: implement
+    const parts = [];
+    for (const char of text) {
+      parts.push(codeTable[char]);
+    }
+    return parts.join("");
   }
 
   // --- Step 5: Decode binary string using code table ---
@@ -59,6 +92,7 @@ giscus_comments: true
   function decode(bits, codeTable) {
     // TODO: implement
     // Hint: invert codeTable to { '01': 'a', ... }, then walk the bits
+    return "";
   }
 
   // --- Step 6: Serialize encoded output ---
@@ -70,7 +104,13 @@ giscus_comments: true
   //   ---
   //   001001100010
   function serializeOutput(codeTable, encodedBits) {
-    // TODO: implement
+    const lines = [];
+    for (const char in codeTable) {
+      lines.push(`${char}:${codeTable[char]}`);
+    }
+    lines.push("---");
+    lines.push(encodedBits);
+    return lines.join("\n");
   }
 
   // --- Step 7: Parse encoded input ---
@@ -78,6 +118,7 @@ giscus_comments: true
   function parseInput(serialized) {
     // TODO: implement
     // Hint: split by '---', parse header lines as char:code
+    return { codeTable: {}, bits: "" };
   }
 
   // --- Button handlers ---
@@ -87,6 +128,8 @@ giscus_comments: true
 
     const freq = getFrequencies(text);
     const tree = buildTree(freq);
+    console.log("freq:", freq);
+    console.log("tree:", JSON.stringify(tree, null, 2));
     const codeTable = buildCodeTable(tree, "", {});
     const encoded = encode(text, codeTable);
     const serialized = serializeOutput(codeTable, encoded);
@@ -113,4 +156,3 @@ giscus_comments: true
 - [ ] **Binary file output** — pack the bitstream into actual bytes (`Uint8Array`) instead of ASCII `"0"`/`"1"` characters. Store padding bit count in the header so the last byte can be decoded correctly.
 - [ ] **File download/upload** — add a "Download .huff" button and a file input to upload `.huff` files for decoding.
 - [ ] **Compression stats** — show original size vs encoded size and compression ratio.
-- [ ] **Tree visualization** — draw the Huffman tree on a `<canvas>` so you can see the structure.
