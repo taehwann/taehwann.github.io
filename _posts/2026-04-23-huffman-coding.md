@@ -1,7 +1,7 @@
 ---
 layout: post
 title: File Compression Using Huffman Coding
-date: 2026-04-24 12:00:00
+date: 2026-04-23 12:00:00
 description: Huffman encoder/decoder from scratch
 tags: algorithm
 categories: computer-science
