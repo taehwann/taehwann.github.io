@@ -162,6 +162,15 @@ giscus_comments: true
 
     const serialized = serialize(codeTable, bitString);
 
+    // Compression stats
+    const originalBits = text.length * 8;
+    const huffmanBits = Object.entries(freq).reduce(
+      (sum, [ch, f]) => sum + f * codeTable[ch].length, 0
+    );
+    console.log(`Original:  ${text.length} chars × 8 = ${originalBits} bits`);
+    console.log(`Huffman:   sum(freq × code_length) = ${huffmanBits} bits`);
+    console.log(`Ratio:     ${((1 - huffmanBits / originalBits) * 100).toFixed(1)}% smaller`);
+
     output.textContent = serialized;
 
     currentOutputData = serialized;
