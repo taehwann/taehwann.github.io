@@ -280,7 +280,7 @@ giscus_comments: true
     const { codeTable, bitString } = parseFromBinary(uploadedBinaryBuffer);
     const decoded = decode(bitString, codeTable);
 
-    output.textContent = "Decoded: " + decoded;
+    output.textContent = decoded;
 
     currentOutputData = decoded;
     currentOutputExt = "txt";
