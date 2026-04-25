@@ -23,6 +23,8 @@ giscus_comments: true
   </div>
 
   <div id="huff-output" style="margin-top:1rem;padding:0.75rem;border-radius:6px;border:1px solid #888;min-height:3rem;max-height:15rem;overflow-y:auto;word-break:break-all;white-space:pre-wrap;font-family:monospace;font-size:0.85rem;"></div>
+
+  <div id="huff-stats" style="margin-top:0.75rem;padding:0.6rem 0.75rem;border-radius:6px;border:1px solid #888;font-family:monospace;font-size:0.85rem;display:none;"></div>
   
   <div style="margin-top:0.75rem;">
     <button id="btn-download" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;display:none;">Download .txt</button>
@@ -37,6 +39,7 @@ giscus_comments: true
   const btnDecode = document.getElementById("btn-decode");
   const fileUpload = document.getElementById("huff-file-upload");
   const btnDownload = document.getElementById("btn-download");
+  const stats = document.getElementById("huff-stats");
   
   let currentOutputData = "";
   let currentOutputExt = "";
@@ -167,9 +170,9 @@ giscus_comments: true
     const huffmanBits = Object.entries(freq).reduce(
       (sum, [ch, f]) => sum + f * codeTable[ch].length, 0
     );
-    console.log(`Original:  ${text.length} chars × 8 = ${originalBits} bits`);
-    console.log(`Huffman:   sum(freq × code_length) = ${huffmanBits} bits`);
-    console.log(`Ratio:     ${((1 - huffmanBits / originalBits) * 100).toFixed(1)}% smaller`);
+    const ratio = ((1 - huffmanBits / originalBits) * 100).toFixed(1);
+    stats.textContent = `Original: ${originalBits} bits (${text.length} × 8)  |  Huffman: ${huffmanBits} bits  |  ${ratio}% smaller`;
+    stats.style.display = "block";
 
     output.textContent = serialized;
 
