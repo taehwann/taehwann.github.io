@@ -17,8 +17,9 @@ giscus_comments: true
     <button id="btn-encode" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;">Encode</button>
     <button id="btn-decode" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;">Decode</button>
     <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
-      <span style="font-size:0.85rem;">Upload file (.txt):</span>
-      <input type="file" id="huff-file-upload" accept=".txt" style="font-size:0.85rem;" />
+      <span style="font-size:0.85rem;">Upload file (.txt, .bin):</span>
+      <input type="file" id="huff-file-upload" accept=".txt,.bin" style="font-size:0.85rem;" />
+      <span style="font-size:0.75rem;color:#999;">.txt → Encode &nbsp;|&nbsp; .bin → Decode</span>
     </div>
   </div>
 
@@ -134,24 +135,88 @@ giscus_comments: true
     return "";
   }
 
-  // --- Step 7: Serialize to text format ---
-  // Packs codeTable + bitString into a readable text string:
-  function serialize(codeTable, bitString) {
-    const { packedArray, padding } = packTo32BitChunks(bitString);
-    return JSON.stringify(codeTable) + "\n---\n" + padding + "\n" + Array.from(packedArray).join(",");
+  // --- Step 7: Serialize to binary format ---
+  // Layout: [headerByteLength (4B)] [padding (4B)] [header text bytes (padded to 4B)] [packed Uint32s]
+  // Returns a Uint8Array containing the complete binary file
+
+  // Serialize code table to simple text format
+  function serializeCodeTable(codeTable) {
+    const escapeChar = (ch) => {
+      if (ch === '\n') return '\\n';
+      if (ch === '\r') return '\\r';
+      if (ch === '\t') return '\\t';
+      if (ch === ':')  return '\\:';
+      if (ch === '\\') return '\\\\';
+      if (ch === ' ')  return '\\s';
+      return ch;
+    };
+    return Object.entries(codeTable)
+      .map(([ch, code]) => escapeChar(ch) + ':' + code)
+      .join('\n');
   }
 
-  // --- Step 8: Parse from text format ---
-  // Takes a serialized string, returns { codeTable, bitString }
-  function parse(text) {
-    const [json, rest] = text.split("\n---\n");
-    const [paddingStr, numsStr] = rest.split("\n");
-    const padding = parseInt(paddingStr);
-    const packedArray = new Uint32Array(numsStr.split(",").map(Number));
-    const codeTable = JSON.parse(json);
-    const bitString = unpackFrom32BitChunks(packedArray, padding);
-    return { codeTable, bitString };
+  // Parse simple text format back to code table
+  function parseCodeTable(text) {
+    const table = {};
+    const lines = text.split('\n');
+    for (const line of lines) {
+      // Find the separator colon (not escaped)
+      let i = 0, ch = '';
+      if (line[0] === '\\') {
+        // Escaped character
+        const esc = line[1];
+        if (esc === 'n')  ch = '\n';
+        else if (esc === 'r') ch = '\r';
+        else if (esc === 't') ch = '\t';
+        else if (esc === ':') ch = ':';
+        else if (esc === '\\') ch = '\\';
+        else if (esc === 's') ch = ' ';
+        i = 3; // skip past "\\X:"
+      } else {
+        ch = line[0];
+        i = 2; // skip past "X:"
+      }
+      table[ch] = line.slice(i);
+    }
+    return table;
   }
+
+  
+  function serializeToBinary(codeTable, bitString) {
+    const headerText = serializeCodeTable(codeTable);
+    const headerBytes = new TextEncoder().encode(headerText);
+    const { packedArray, padding } = packTo32BitChunks(bitString);
+    const headerByteLength = headerBytes.length;
+    // use this padding for 4 byte alignment
+    const paddedHeaderBytes = Math.ceil(headerByteLength / 4) * 4;
+    const totalSize = 4 + 4 + paddedHeaderBytes + packedArray.byteLength;
+    const buffer = new ArrayBuffer(totalSize);
+    const view = new DataView(buffer);
+    // little-endian
+    view.setUint32(0, headerByteLength, true);
+    view.setUint32(4, padding, true);
+    const headerOffset = 8;
+    new Uint8Array(buffer, headerOffset, headerByteLength).set(headerBytes);
+    const dataOffset = headerOffset + paddedHeaderBytes;
+    new Uint8Array(buffer, dataOffset).set(new Uint8Array(packedArray.buffer));
+    return new Uint8Array(buffer);
+  }
+
+  // --- Step 8: Parse from binary format ---
+  // Takes an ArrayBuffer, returns { codeTable, bitString }
+  function parseFromBinary(buffer) {
+    // TODO: 1. Create a DataView over the buffer
+    // TODO: 2. Read headerByteLength from offset 0 (DataView.getUint32)
+    // TODO: 3. Read padding from offset 4
+    // TODO: 4. Read header text bytes: new Uint8Array(buffer, 8, headerByteLength)
+    // TODO: 5. Decode with TextDecoder and parseCodeTable() to get codeTable
+    // TODO: 6. Calculate where packed data starts: 8 + ceil(headerByteLength / 4) * 4
+    // TODO: 7. Read packedArray as new Uint32Array(buffer, dataOffset)
+    // TODO: 8. Recover bitString with unpackFrom32BitChunks(packedArray, padding)
+    return { codeTable: {}, bitString: "" };
+  }
+
+  let uploadedBinaryBuffer = null;
 
   // --- Button handlers ---
   btnEncode.addEventListener("click", function () {
@@ -163,33 +228,37 @@ giscus_comments: true
     const codeTable = buildCodeTable(tree, "", {});
     const bitString = encode(text, codeTable);
 
-    const serialized = serialize(codeTable, bitString);
+    const binaryData = serializeToBinary(codeTable, bitString);
 
-    // Compression stats
-    const originalBits = text.length * 8;
+    // Compression stats — file sizes in bytes
+    const originalBytes = text.length;
     const huffmanBits = Object.entries(freq).reduce(
       (sum, [ch, f]) => sum + f * codeTable[ch].length, 0
     );
-    const ratio = ((1 - huffmanBits / originalBits) * 100).toFixed(1);
-    stats.textContent = `Original: ${originalBits} bits (${text.length} × 8)  |  Huffman: ${huffmanBits} bits  |  ${ratio}% smaller`;
+    const headerBytes = new TextEncoder().encode(serializeCodeTable(codeTable)).length;
+    const huffmanDataBytes = Math.ceil(huffmanBits / 32) * 4;
+    const huffmanBinaryBytes = 4 + 4 + Math.ceil(headerBytes / 4) * 4 + huffmanDataBytes;
+    const ratio = ((1 - huffmanBinaryBytes / originalBytes) * 100).toFixed(1);
+    stats.innerHTML =
+      `Original:        ${originalBytes} bytes<br>` +
+      `Huffman binary:  ${huffmanBinaryBytes} bytes (header: ${headerBytes}B + data: ${huffmanDataBytes}B) \u2014 ${ratio}% smaller`;
     stats.style.display = "block";
 
-    output.textContent = serialized;
+    output.textContent = serializeCodeTable(codeTable) + "\n---\n" + bitString;
 
-    currentOutputData = serialized;
-    currentOutputExt = "txt";
-    btnDownload.textContent = "Download .txt";
+    currentOutputData = binaryData;
+    currentOutputExt = "bin";
+    btnDownload.textContent = "Download .bin";
     btnDownload.style.display = "inline-block";
   });
 
   btnDecode.addEventListener("click", function () {
-    const text = input.value;
-    if (!text) {
-      output.textContent = "Error: Paste or upload an encoded .txt file to decode.";
+    if (!uploadedBinaryBuffer) {
+      output.textContent = "Error: Upload a .bin file to decode.";
       return;
     }
 
-    const { codeTable, bitString } = parse(text);
+    const { codeTable, bitString } = parseFromBinary(uploadedBinaryBuffer);
     const decoded = decode(bitString, codeTable);
 
     output.textContent = "Decoded: " + decoded;
@@ -205,19 +274,23 @@ giscus_comments: true
     const file = e.target.files[0];
     if (!file) return;
     
-    // Always retrieve array buffer for binary decoding
-    const arrayReader = new FileReader();
-    arrayReader.onload = function(evt) {
-      uploadedBinaryBuffer = evt.target.result;
-    };
-    arrayReader.readAsArrayBuffer(file);
-    
-    // Simultaneously display readable format logic for plain text encodings
-    const stringReader = new FileReader();
-    stringReader.onload = function(evt) {
-      input.value = evt.target.result;
-    };
-    stringReader.readAsText(file);
+    if (file.name.endsWith(".bin")) {
+      // Binary file → store for decoding
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        uploadedBinaryBuffer = evt.target.result;
+        output.textContent = "Loaded " + file.name + " (" + evt.target.result.byteLength + " bytes). Click Decode.";
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      // Text file → load into textarea for encoding
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        input.value = evt.target.result;
+        output.textContent = "Loaded " + file.name + ". Click Encode.";
+      };
+      reader.readAsText(file);
+    }
   });
 
   // Handle file download
@@ -238,8 +311,16 @@ giscus_comments: true
 
 ---
 
-## Future Steps
+## Steps
 
-- [ ] **Binary file output** — pack the bitstream into actual bytes (`Uint8Array`) instead of ASCII `"0"`/`"1"` characters. Store padding bit count in the header so the last byte can be decoded correctly.
-- [x] **File download/upload** — add a "Download .txt" button and a file input to upload `.txt` files for decoding.
-- [ ] **Compression stats** — show original size vs encoded size and compression ratio.
+- [x] **Step 1: Count frequencies** — `getFrequencies(text)`
+- [x] **Step 2: Build Huffman tree** — `buildTree(freq)`
+- [x] **Step 3: Generate code table** — `buildCodeTable(node, prefix, table)`
+- [x] **Step 4: Encode text** — `encode(text, codeTable)`
+- [ ] **Step 5: Decode bitstring** — `decode(bits, codeTable)`
+- [x] **Step 6: Pack to 32-bit chunks** — `packTo32BitChunks(bitString)`
+- [ ] **Step 6: Unpack from 32-bit chunks** — `unpackFrom32BitChunks(packedArray, padding)`
+- [ ] **Step 7: Serialize to binary** — `serializeToBinary(codeTable, bitString)`
+- [ ] **Step 8: Parse from binary** — `parseFromBinary(buffer)`
+- [x] **Compression stats** — show original size vs Huffman binary size
+- [x] **File download/upload** — `.bin` download and upload
