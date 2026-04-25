@@ -330,16 +330,38 @@ giscus_comments: true
 
 ---
 
-## Steps
+## How Huffman Coding Works
 
-- [x] **Step 1: Count frequencies** — `getFrequencies(text)`
-- [x] **Step 2: Build Huffman tree** — `buildTree(freq)`
-- [x] **Step 3: Generate code table** — `buildCodeTable(node, prefix, table)`
-- [x] **Step 4: Encode text** — `encode(text, codeTable)`
-- [x] **Step 5: Decode bitstring** — `decode(bits, codeTable)`
-- [x] **Step 6: Pack to 32-bit chunks** — `packTo32BitChunks(bitString)`
-- [x] **Step 6: Unpack from 32-bit chunks** — `unpackFrom32BitChunks(packedArray, padding)`
-- [x] **Step 7: Serialize to binary** — `serializeToBinary(codeTable, bitString)`
-- [x] **Step 8: Parse from binary** — `parseFromBinary(buffer)`
-- [x] **Compression stats** — show original size vs Huffman binary size
-- [x] **File download/upload** — `.bin` download and upload
+Huffman coding is a popular lossless data compression algorithm. The core idea is to assign variable-length codes to input characters, with lengths based on the frequencies of the corresponding characters. The most frequent characters get the shortest codes and the least frequent characters get the longest codes. 
+
+Because the codes are generated using a binary tree (the Huffman tree), they are **prefix codes**, which means the bit representation of any character is never a prefix of the bit representation of any other character. This is crucial because it allows the encoded bitstream to be decoded unambiguously without needing any special delimiters between characters.
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/posts/huffman-coding/huffman-coding-note.jpg" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    My handwritten notes on Huffman Coding.
+</div>
+
+## Implementation Details
+
+My implementation breaks the process down into several specific, manageable steps:
+
+1. **Count Frequencies**: The `getFrequencies` function scans the input text and builds a frequency map of each character.
+2. **Build the Huffman Tree**: `buildTree` takes the frequencies and constructs a priority queue (using a sorted array for simplicity). It repeatedly takes the two nodes with the lowest frequencies and merges them into a parent node until only the root node remains.
+3. **Generate Code Table**: The tree is traversed recursively by `buildCodeTable` to generate a binary string ('0' for left, '1' for right) for each leaf node.
+4. **Encoding**: `encode` converts the original text into a single, long string of `'0'`s and `'1'`s using the code table.
+5. **Binary Packing**: Since JavaScript natively stores strings using UTF-16, a string of `"0101"` uses way more memory than actual bits. `packTo32BitChunks` converts this pseudo-bitstream into a `Uint32Array` by packing 32 bits into each integer.
+6. **Binary Serialization**: To save it as an actual file, `serializeToBinary` creates a byte buffer using standard `DataView` and `Uint8Array`. It writes a header (so the decoder knows the code table), padding information (so we know how many trailing bits to ignore in the last chunk), and the compressed data itself. 
+7. **Decoding**: Decoding reverses the process. We parse the file bytes, read the header to reconstruct the code table, unpack the `Uint32Array` back into our stream of bits, and traverse our reverse code mapping to get the original text back.
+
+## Future Improvements
+
+While this implementation is fully functional and compresses text efficiently, there are some areas for improvement in the future:
+
+- **Eliminate Intermediate String Allocation**: Currently, the code builds a giant string of `"1"`s and `"0"`s during encoding before packing it into 32-bit integers. This can cause high memory usage for large files. Writing directly to a bit buffer during encoding would be much more memory-efficient.
+- **Tree Storage Format**: Right now, the header directly stores a simple text serialization of the code table (e.g., `a:01\nb:10`). It would be more compact to serialize the structure of the Huffman tree itself, or just the frequencies, saving header overhead.
+- **Adaptive Huffman Coding**: This current implementation is robust, but it requires two passes over the data (one to get frequencies, one to encode). Adaptive (or dynamic) Huffman coding updates the tree dynamically as symbols are read, requiring only a single pass.
+- **Handling Binary Files**: Right now the input is strictly treated as text characters. Updating the initial frequency map to use raw bytes (0-255) instead of string characters would allow testing compression on not just text, but arbitrary file types (like images or executables).
