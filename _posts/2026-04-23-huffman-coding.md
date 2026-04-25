@@ -17,8 +17,8 @@ giscus_comments: true
     <button id="btn-encode" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;">Encode</button>
     <button id="btn-decode" style="padding:0.4rem 1rem;cursor:pointer;border-radius:4px;border:1px solid #888;background:transparent;color:inherit;">Decode</button>
     <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
-      <span style="font-size:0.85rem;">Upload file (.txt / .huff):</span>
-      <input type="file" id="huff-file-upload" accept=".txt,.huff" style="font-size:0.85rem;" />
+      <span style="font-size:0.85rem;">Upload file (.txt):</span>
+      <input type="file" id="huff-file-upload" accept=".txt" style="font-size:0.85rem;" />
     </div>
   </div>
 
@@ -80,7 +80,7 @@ giscus_comments: true
   // Returns an object like { 'a': '01', 'b': '110', ... }
   function buildCodeTable(node, prefix, table) {
     if (node.is_leaf) {
-      table[node.char] = prefix;
+      table[node.char] = prefix || '0';
       return table;
     }
 
@@ -108,26 +108,46 @@ giscus_comments: true
     return "";
   }
 
-  // --- Step 6: Serialize encoded output ---
-  // Combines code table + encoded bits into a single text string
-  // Format:
-  //   a:00
-  //   b:01
-  //   c:10
-  //   ---
-  //   001001100010
-  function serializeOutput(codeTable, encodedBits) {
-    // stringify since there is a chance that the code table contains special characters
-    const header = JSON.stringify(codeTable);
-    return header + "\n---\n" + encodedBits;
+  // --- Step 6: Pack and Unpack 32-bit chunks ---
+  // Takes a bitString like "010011..." and returns a Uint32Array and padding bit count
+  function packTo32BitChunks(bitString) {
+    const numInts = Math.ceil(bitString.length / 32);
+    const packedArray = new Uint32Array(numInts);
+    for (let i = 0; i < bitString.length; i++) {
+      const chunkIndex = Math.floor(i / 32);
+      const bitIndex = i % 32;
+      packedArray[chunkIndex] |= (parseInt(bitString[i]) << (31 - bitIndex));
+    }
+    // outer mod for perfect no padding case (32 % 32 = 0)
+    const padding = (32 - (bitString.length % 32)) % 32;
+    return { packedArray, padding };
   }
 
-  // --- Step 7: Parse encoded input ---
-  // Takes the serialized string, returns { codeTable, bits }
-  function parseInput(serialized) {
-    // TODO: implement
-    // Hint: split by '---', parse header lines as char:code
-    return { codeTable: {}, bits: "" };
+  // Takes a Uint32Array and padding count, returns the original bitString
+  function unpackFrom32BitChunks(packedArray, padding) {
+    // TODO: 1. Loop through packedArray
+    // TODO: 2. Extract each bit (using bitwise operators) and append '0' or '1' to string
+    // TODO: 3. Ignore `padding` number of bits on the very last element
+    return "";
+  }
+
+  // --- Step 7: Serialize to text format ---
+  // Packs codeTable + bitString into a readable text string:
+  function serialize(codeTable, bitString) {
+    const { packedArray, padding } = packTo32BitChunks(bitString);
+    return JSON.stringify(codeTable) + "\n---\n" + padding + "\n" + Array.from(packedArray).join(",");
+  }
+
+  // --- Step 8: Parse from text format ---
+  // Takes a serialized string, returns { codeTable, bitString }
+  function parse(text) {
+    const [json, rest] = text.split("\n---\n");
+    const [paddingStr, numsStr] = rest.split("\n");
+    const padding = parseInt(paddingStr);
+    const packedArray = new Uint32Array(numsStr.split(",").map(Number));
+    const codeTable = JSON.parse(json);
+    const bitString = unpackFrom32BitChunks(packedArray, padding);
+    return { codeTable, bitString };
   }
 
   // --- Button handlers ---
@@ -137,14 +157,10 @@ giscus_comments: true
 
     const freq = getFrequencies(text);
     const tree = buildTree(freq);
-    console.log("freq:", freq);
-    console.log("tree:", JSON.stringify(tree, null, 2));
     const codeTable = buildCodeTable(tree, "", {});
-    console.log("codeTable:", codeTable);
-    const encoded = encode(text, codeTable);
-    console.log("encoded:", encoded);
-    const serialized = serializeOutput(codeTable, encoded);
-    console.log("serialized:", serialized);
+    const bitString = encode(text, codeTable);
+
+    const serialized = serialize(codeTable, bitString);
 
     output.textContent = serialized;
 
@@ -155,11 +171,14 @@ giscus_comments: true
   });
 
   btnDecode.addEventListener("click", function () {
-    const serialized = input.value;
-    if (!serialized) return;
+    const text = input.value;
+    if (!text) {
+      output.textContent = "Error: Paste or upload an encoded .txt file to decode.";
+      return;
+    }
 
-    const { codeTable, bits } = parseInput(serialized);
-    const decoded = decode(bits, codeTable);
+    const { codeTable, bitString } = parse(text);
+    const decoded = decode(bitString, codeTable);
 
     output.textContent = "Decoded: " + decoded;
 
@@ -173,17 +192,26 @@ giscus_comments: true
   fileUpload.addEventListener("change", function(e) {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(evt) {
+    
+    // Always retrieve array buffer for binary decoding
+    const arrayReader = new FileReader();
+    arrayReader.onload = function(evt) {
+      uploadedBinaryBuffer = evt.target.result;
+    };
+    arrayReader.readAsArrayBuffer(file);
+    
+    // Simultaneously display readable format logic for plain text encodings
+    const stringReader = new FileReader();
+    stringReader.onload = function(evt) {
       input.value = evt.target.result;
     };
-    reader.readAsText(file);
+    stringReader.readAsText(file);
   });
 
   // Handle file download
   btnDownload.addEventListener("click", function() {
     if (!currentOutputData) return;
-    const blob = new Blob([currentOutputData], { type: "text/plain" });
+    const blob = new Blob([currentOutputData]); // Support blob infering data type natively
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -201,5 +229,5 @@ giscus_comments: true
 ## Future Steps
 
 - [ ] **Binary file output** — pack the bitstream into actual bytes (`Uint8Array`) instead of ASCII `"0"`/`"1"` characters. Store padding bit count in the header so the last byte can be decoded correctly.
-- [x] **File download/upload** — add a "Download .huff" button and a file input to upload `.txt` files for decoding.
+- [x] **File download/upload** — add a "Download .txt" button and a file input to upload `.txt` files for decoding.
 - [ ] **Compression stats** — show original size vs encoded size and compression ratio.
