@@ -332,7 +332,7 @@ giscus_comments: true
 
 ## How Huffman Coding Works
 
-Huffman coding is a popular lossless data compression algorithm. The core idea is to assign variable-length codes to input characters, with lengths based on the frequencies of the corresponding characters. The most frequent characters get the shortest codes and the least frequent characters get the longest codes. 
+Huffman coding is a popular lossless data compression algorithm. The core idea is to assign variable-length codes to input characters, with lengths based on the frequencies of the corresponding characters. The most frequent characters get the shortest codes and the least frequent characters get the longest codes.
 
 Because the codes are generated using a binary tree (the Huffman tree), they are **prefix codes**, which means the bit representation of any character is never a prefix of the bit representation of any other character. This is crucial because it allows the encoded bitstream to be decoded unambiguously without needing any special delimiters between characters.
 
@@ -354,7 +354,7 @@ My implementation breaks the process down into several specific, manageable step
 3. **Generate Code Table**: The tree is traversed recursively by `buildCodeTable` to generate a binary string ('0' for left, '1' for right) for each leaf node.
 4. **Encoding**: `encode` converts the original text into a single, long string of `'0'`s and `'1'`s using the code table.
 5. **Binary Packing**: Since JavaScript natively stores strings using UTF-16, a string of `"0101"` uses way more memory than actual bits. `packTo32BitChunks` converts this pseudo-bitstream into a `Uint32Array` by packing 32 bits into each integer.
-6. **Binary Serialization**: To save it as an actual file, `serializeToBinary` creates a byte buffer using standard `DataView` and `Uint8Array`. It writes a header (so the decoder knows the code table), padding information (so we know how many trailing bits to ignore in the last chunk), and the compressed data itself. 
+6. **Binary Serialization**: To save it as an actual file, `serializeToBinary` creates a byte buffer using standard `DataView` and `Uint8Array`. It writes a header (so the decoder knows the code table), padding information (so we know how many trailing bits to ignore in the last chunk), and the compressed data itself.
 7. **Decoding**: Decoding reverses the process. We parse the file bytes, read the header to reconstruct the code table, unpack the `Uint32Array` back into our stream of bits, and traverse our reverse code mapping to get the original text back.
 
 ## Future Improvements
