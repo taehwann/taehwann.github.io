@@ -107,9 +107,19 @@ giscus_comments: true
   // Takes bitstream string and code table { 'a': '01', ... }
   // Returns the original text
   function decode(bits, codeTable) {
-    // TODO: implement
-    // Hint: invert codeTable to { '01': 'a', ... }, then walk the bits
-    return "";
+    const reverseCodeTable = Object.fromEntries(
+      Object.entries(codeTable).map(([char, code]) => [code, char])
+    );
+    const chars = [];
+    let currentCode = "";
+    for (const bit of bits) {
+      currentCode += bit;
+      if (reverseCodeTable[currentCode]) {
+        chars.push(reverseCodeTable[currentCode]);
+        currentCode = "";
+      }
+    }
+    return chars.join("");
   }
 
   // --- Step 6: Pack and Unpack 32-bit chunks ---
@@ -129,10 +139,16 @@ giscus_comments: true
 
   // Takes a Uint32Array and padding count, returns the original bitString
   function unpackFrom32BitChunks(packedArray, padding) {
-    // TODO: 1. Loop through packedArray
-    // TODO: 2. Extract each bit (using bitwise operators) and append '0' or '1' to string
-    // TODO: 3. Ignore `padding` number of bits on the very last element
-    return "";
+    const bits = [];
+    for (let i = 0; i < packedArray.length; i++) {
+      const chunk = packedArray[i];
+      for (let j = 0; j < 32; j++) {
+        const bit = (chunk >> (31 - j)) & 1;
+        bits.push(bit);
+      }
+    }
+    bits.splice(bits.length - padding, padding);
+    return bits.join("");
   }
 
   // --- Step 7: Serialize to binary format ---
@@ -160,6 +176,7 @@ giscus_comments: true
     const table = {};
     const lines = text.split('\n');
     for (const line of lines) {
+      if (!line) continue; // to prevent empty lines from throwing errors
       // Find the separator colon (not escaped)
       let i = 0, ch = '';
       if (line[0] === '\\') {
@@ -205,15 +222,17 @@ giscus_comments: true
   // --- Step 8: Parse from binary format ---
   // Takes an ArrayBuffer, returns { codeTable, bitString }
   function parseFromBinary(buffer) {
-    // TODO: 1. Create a DataView over the buffer
-    // TODO: 2. Read headerByteLength from offset 0 (DataView.getUint32)
-    // TODO: 3. Read padding from offset 4
-    // TODO: 4. Read header text bytes: new Uint8Array(buffer, 8, headerByteLength)
-    // TODO: 5. Decode with TextDecoder and parseCodeTable() to get codeTable
-    // TODO: 6. Calculate where packed data starts: 8 + ceil(headerByteLength / 4) * 4
-    // TODO: 7. Read packedArray as new Uint32Array(buffer, dataOffset)
-    // TODO: 8. Recover bitString with unpackFrom32BitChunks(packedArray, padding)
-    return { codeTable: {}, bitString: "" };
+    const view = new DataView(buffer);
+    const headerByteLength = view.getUint32(0, true);
+    const padding = view.getUint32(4, true);
+    const headerBytes = new Uint8Array(buffer, 8, headerByteLength);
+    const headerText = new TextDecoder().decode(headerBytes);
+    const codeTable = parseCodeTable(headerText);
+    // use this padding for 4 byte alignment
+    const dataOffset = 8 + Math.ceil(headerByteLength / 4) * 4;
+    const packedArray = new Uint32Array(buffer, dataOffset);
+    const bitString = unpackFrom32BitChunks(packedArray, padding);
+    return { codeTable, bitString };
   }
 
   let uploadedBinaryBuffer = null;
@@ -317,10 +336,10 @@ giscus_comments: true
 - [x] **Step 2: Build Huffman tree** — `buildTree(freq)`
 - [x] **Step 3: Generate code table** — `buildCodeTable(node, prefix, table)`
 - [x] **Step 4: Encode text** — `encode(text, codeTable)`
-- [ ] **Step 5: Decode bitstring** — `decode(bits, codeTable)`
+- [x] **Step 5: Decode bitstring** — `decode(bits, codeTable)`
 - [x] **Step 6: Pack to 32-bit chunks** — `packTo32BitChunks(bitString)`
-- [ ] **Step 6: Unpack from 32-bit chunks** — `unpackFrom32BitChunks(packedArray, padding)`
-- [ ] **Step 7: Serialize to binary** — `serializeToBinary(codeTable, bitString)`
-- [ ] **Step 8: Parse from binary** — `parseFromBinary(buffer)`
+- [x] **Step 6: Unpack from 32-bit chunks** — `unpackFrom32BitChunks(packedArray, padding)`
+- [x] **Step 7: Serialize to binary** — `serializeToBinary(codeTable, bitString)`
+- [x] **Step 8: Parse from binary** — `parseFromBinary(buffer)`
 - [x] **Compression stats** — show original size vs Huffman binary size
 - [x] **File download/upload** — `.bin` download and upload
