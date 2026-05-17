@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/projects/";
           },
-        },{id: "post-file-compression-using-huffman-coding",
+        },{id: "post-",
+        
+          title: "",
+        
+        description: "",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/2026-05-16-turing-complete/";
+          
+        },
+      },{id: "post-file-compression-using-huffman-coding",
         
           title: "File Compression Using Huffman Coding",
         
