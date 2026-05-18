@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Building a CPU from Scratch: Reflections on Turing Complete
+title: Reflections on Turing Complete (Building a CPU from Scratch)
 date: 2026-05-16 12:00:00
 description: How building a virtual CPU changed my perspective on computer architecture, control flow, and hardware design.
 tags: cpu hardware
