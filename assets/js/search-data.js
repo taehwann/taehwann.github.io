@@ -23,15 +23,15 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/projects/";
           },
-        },{id: "post-",
+        },{id: "post-reflections-on-turing-complete-building-a-cpu-from-scratch",
         
-          title: "",
+          title: "Reflections on Turing Complete (Building a CPU from Scratch)",
         
-        description: "",
+        description: "How building a virtual CPU changed my perspective on computer architecture, control flow, and hardware design.",
         section: "Posts",
         handler: () => {
           
-            window.location.href = "/blog/2026/2026-05-16-turing-complete/";
+            window.location.href = "/blog/2026/turing-complete/";
           
         },
       },{id: "post-file-compression-using-huffman-coding",
