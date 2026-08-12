@@ -3,7 +3,7 @@ layout: page
 title: Vapor
 description: Interactive real-time 3D smoke plume simulation with GPU-accelerated fluid solver and volume ray-marching
 importance: 1
-category: graphics
+category: work
 project_id: vapor
 img: assets/img/3d-smoke-plume.gif
 repositories:
@@ -40,5 +40,3 @@ Smoke density is uploaded to a 3D half-float texture (`GL_R16F`) and rendered wi
 - **CPU Parallelism**: OpenMP
 - **GUI**: Dear ImGui with GLFW + OpenGL3 backends
 - **Build**: CMake 3.20+
-
-
