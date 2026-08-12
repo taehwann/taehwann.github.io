@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/projects/";
           },
-        },{id: "post-reflections-on-turing-complete-building-a-cpu-from-scratch",
+        },{id: "post-reflections-on-vapor-building-a-3d-smoke-simulator",
+        
+          title: "Reflections on Vapor (Building a 3D Smoke Simulator)",
+        
+        description: "What I learned building a real-time 3D fluid simulation with GPU acceleration from scratch.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/vapor/";
+          
+        },
+      },{id: "post-reflections-on-turing-complete-building-a-cpu-from-scratch",
         
           title: "Reflections on Turing Complete (Building a CPU from Scratch)",
         
@@ -452,7 +463,12 @@ ninja.data = [{
                 },},{id: "news-a-simple-inline-announcement-with-markdown-emoji-sparkles-smile",
               title: 'A simple inline announcement with Markdown emoji! :sparkles: :smile:',
               description: "",
-              section: "News",},{id: "projects-project-1",
+              section: "News",},{id: "projects-vapor",
+              title: 'Vapor',
+              description: "Interactive real-time 3D smoke plume simulation with GPU-accelerated fluid solver and volume ray-marching",
+              section: "Projects",handler: () => {
+                  window.location.href = "/projects/10_project/";
+                },},{id: "projects-project-1",
               title: 'project 1',
               description: "with background image",
               section: "Projects",handler: () => {
