@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Test Project
+published: false
 description: A test project to verify the new linking logic
 importance: 1
 category: work
