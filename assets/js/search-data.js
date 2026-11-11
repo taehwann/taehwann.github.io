@@ -56,11 +56,26 @@ ninja.data = [{
             window.location.href = "/blog/2026/huffman-coding/";
           
         },
-      },{id: "projects-vapor",
+      },{id: "books-the-godfather",
+              title: 'The Godfather',
+              description: "",
+              section: "Books",handler: () => {
+                  window.location.href = "/books/the_godfather/";
+                },},{id: "projects-vapor",
               title: 'Vapor',
               description: "Interactive real-time 3D smoke plume simulation with GPU-accelerated fluid solver and volume ray-marching",
               section: "Projects",handler: () => {
                   window.location.href = "/projects/10_project/";
+                },},{id: "teachings-data-science-fundamentals",
+              title: 'Data Science Fundamentals',
+              description: "This course covers the foundational aspects of data science, including data collection, cleaning, analysis, and visualization. Students will learn practical skills for working with real-world datasets.",
+              section: "Teachings",handler: () => {
+                  window.location.href = "/teachings/data-science-fundamentals/";
+                },},{id: "teachings-introduction-to-machine-learning",
+              title: 'Introduction to Machine Learning',
+              description: "This course provides an introduction to machine learning concepts, algorithms, and applications. Students will learn about supervised and unsupervised learning, model evaluation, and practical implementations.",
+              section: "Teachings",handler: () => {
+                  window.location.href = "/teachings/introduction-to-machine-learning/";
                 },},{
       id: 'light-theme',
       title: 'Change theme to light',
