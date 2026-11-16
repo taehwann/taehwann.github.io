@@ -173,6 +173,108 @@
   overflow-y: hidden;
   padding: 8px 0;
 }
+.slotmachine-post .arrangement-example {
+  border: 1px solid var(--sm-line);
+  border-radius: 4px;
+  padding: 18px;
+}
+.slotmachine-post .arrangement-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.slotmachine-post .arrangement-panel {
+  min-width: 0;
+}
+.slotmachine-post .arrangement-panel h5 {
+  font-size: 0.95rem;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+.slotmachine-post .arrangement-strips {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+.slotmachine-post .arrangement-strips > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--sm-line);
+  border-radius: 3px;
+  padding: 7px 9px;
+}
+.slotmachine-post .arrangement-strips span {
+  font-size: 0.7rem;
+  color: var(--global-text-color-light, #697065);
+}
+.slotmachine-post .arrangement-strips strong {
+  font:
+    14px/1.5 Consolas,
+    monospace;
+  white-space: nowrap;
+}
+.slotmachine-post .arrangement-strips .arrangement-changed {
+  border-color: #bc603b;
+  box-shadow: inset 3px 0 #bc603b;
+}
+.slotmachine-post .arrangement-label {
+  font-size: 0.7rem;
+  color: var(--global-text-color-light, #697065);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.slotmachine-post .arrangement-outcome {
+  display: grid;
+  grid-template-columns: 45px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 0.7rem;
+}
+.slotmachine-post .arrangement-outcome code {
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.slotmachine-post .arrangement-outcome strong {
+  color: var(--global-theme-color, #35634a);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.slotmachine-post .arrangement-moments {
+  margin-top: 12px;
+  font-size: 0.7rem;
+  line-height: 1.8;
+  font-variant-numeric: tabular-nums;
+}
+.slotmachine-post .arrangement-example .chart {
+  min-height: 0;
+  padding: 10px;
+}
+.slotmachine-post .arrangement-example .chart svg {
+  max-width: 520px;
+  margin: 0 auto;
+}
+@media (max-width: 640px) {
+  .slotmachine-post .arrangement-panels {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .slotmachine-post .arrangement-example {
+    padding: 12px;
+  }
+  .slotmachine-post .arrangement-example .chart {
+    padding: 4px;
+  }
+  .slotmachine-post .arrangement-example th,
+  .slotmachine-post .arrangement-example td {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.25rem;
+  }
+}
 .slotmachine-post .experiment {
   position: relative;
   isolation: isolate;

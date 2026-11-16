@@ -1,0 +1,59 @@
+<div markdown="0">
+  <figure id="reel-arrangement-example" class="arrangement-example" aria-labelledby="arrangement-caption">
+    <div class="arrangement-panels">
+      <section class="arrangement-panel" aria-labelledby="arrangement-a-title">
+        <h5 id="arrangement-a-title">Arrangement A — Grouped</h5>
+        <div class="arrangement-strips" aria-label="Reel strips: ABC, ABC, ABC">
+          <div><span>Reel 1</span><strong>A → B → C</strong></div>
+          <div><span>Reel 2</span><strong>A → B → C</strong></div>
+          <div><span>Reel 3</span><strong>A → B → C</strong></div>
+        </div>
+        <p class="arrangement-label">Illustrative spin · all top symbols are A</p>
+        <div class="arrangement-outcome"><span>Top</span><code>A A A</code><strong>Win · 1 coin</strong></div>
+        <div class="arrangement-outcome"><span>Bottom</span><code>B B B</code><strong>Win · 1 coin</strong></div>
+        <p class="arrangement-moments" id="arrangement-a-moments"></p>
+      </section>
+      <section class="arrangement-panel" aria-labelledby="arrangement-b-title">
+        <h5 id="arrangement-b-title">Arrangement B — Rearranged</h5>
+        <div class="arrangement-strips" aria-label="Reel strips: ABC, ACB, ABC. Only reel two changes.">
+          <div><span>Reel 1</span><strong>A → B → C</strong></div>
+          <div class="arrangement-changed"><span>Reel 2 · changed</span><strong>A → C → B</strong></div>
+          <div><span>Reel 3</span><strong>A → B → C</strong></div>
+        </div>
+        <p class="arrangement-label">Illustrative spin · all top symbols are A</p>
+        <div class="arrangement-outcome"><span>Top</span><code>A A A</code><strong>Win · 1 coin</strong></div>
+        <div class="arrangement-outcome"><span>Bottom</span><code>B C B</code><span>No win · 0 coins</span></div>
+        <p class="arrangement-moments" id="arrangement-b-moments"></p>
+      </section>
+    </div>
+    <p class="small">
+      The spins above illustrate one outcome per arrangement. The complete distributions below count all 27 equally likely stop combinations.
+    </p>
+    <div class="chart-legend"><span class="legend-one">Arrangement A</span><span class="legend-two">Arrangement B</span></div>
+    <div id="arrangement-chart" class="chart"><p>Loading the exact payout distributions…</p></div>
+    <div class="table-wrap">
+      <table>
+        <caption>
+          Total payout probabilities · exact enumeration
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Total payout</th>
+            <th scope="col">Arrangement A</th>
+            <th scope="col">Arrangement B</th>
+          </tr>
+        </thead>
+        <tbody id="arrangement-probabilities"></tbody>
+      </table>
+    </div>
+    <figcaption id="arrangement-caption">
+      Only the middle reel's order changes. Symbol frequencies and expected payout stay the same; simultaneous wins and total variance change.
+    </figcaption>
+    <noscript>
+      <p>
+        JavaScript is required to enumerate and display this example. Arrangement A pays 0 or 2 coins; Arrangement B pays 0 or 1 coin. Both have an
+        expected payout of 2/9 coins.
+      </p>
+    </noscript>
+  </figure>
+</div>

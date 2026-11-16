@@ -650,6 +650,26 @@ Even though the mathematical average is almost identical, the frequency and size
 
 Of course, variance is not the only factor influencing player experience, but it is an important consideration when balancing slot-like mechanics.
 
+#### Variance across five paylines
+
+The total payout is the sum of the five line payouts:
+
+$$
+X = X_1 + X_2 + X_3 + X_4 + X_5
+$$
+
+Its variance is:
+
+$$
+\operatorname{Var}(X)
+= \sum_{i=1}^{5}\operatorname{Var}(X_i)
++ 2\sum_{i<j}\operatorname{Cov}(X_i,X_j)
+$$
+
+Unlike expected values, variances cannot generally be added on their own: paylines are not necessarily independent. Our paylines share the same reel outcomes, and some share cells. Observing a win on one line can change the likelihood of a win on another.
+
+When two lines tend to win together, their payouts can reinforce each other's fluctuations. When they tend to win separately, those fluctuations may partially offset each other. Covariance accounts for these relationships when calculating the variance of the total payout.
+
 ### 4.4 Does Reel Arrangement Affect RTP?
 
 One last detail: what happens if we rearrange the symbols on a reel without changing how many times each symbol appears?
@@ -659,6 +679,20 @@ The RTP stays the same.
 Since every reel stop is equally likely, changing the order of symbols does not change their individual probabilities on a specified payline.
 
 Therefore, as long as the symbol counts, paytable, and paylines remain unchanged, the theoretical RTP remains unchanged as well.
+
+However, their payouts may occur together differently. Let's look at a smaller, separate model: three reels, each containing one A, one B, and one C. Each reel independently selects one of three equally likely stops. The selected symbol appears on the top line, and the next symbol appears on the bottom line, wrapping around the strip.
+
+AAA, BBB, or CCC pays one coin per winning line; every other combination pays zero. Both horizontal lines can win on the same spin. We change only the order of the middle reel:
+
+{% include slotmachine/arrangement.liquid %}
+
+Both arrangements have the same expected payout:
+
+$$
+E[X] = \frac{2}{9}
+$$
+
+Even with identical symbol frequencies and expected return, changing the reel arrangement changes how often the lines win together. Those relationships are the covariance terms from Section 4.3, resulting in different total payout distributions and variances.
 
 ## 5. Testing with Simulations
 
@@ -788,3 +822,4 @@ This post and its interactive demo are for educational purposes.
 <script defer src="{{ '/assets/js/posts/slotmachine/data.js' | relative_url }}"></script>
 <script defer src="{{ '/assets/js/posts/slotmachine/engine.js' | relative_url }}"></script>
 <script defer src="{{ '/assets/js/posts/slotmachine/app.js' | relative_url }}"></script>
+<script defer src="{{ '/assets/js/posts/slotmachine/arrangement.js' | relative_url }}"></script>
