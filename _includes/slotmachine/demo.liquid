@@ -1,0 +1,85 @@
+<div markdown="0">
+  <section class="experiment" aria-labelledby="experiment-title">
+    <div class="game-heading">
+      <p class="eyebrow">FIVE REELS · FIVE PAYLINES · ONE COIN</p>
+      <h2 id="experiment-title" data-toc-skip>Temple of Chance</h2>
+      <p class="game-subtitle">Two sets of reels. One ancient question: what are the odds?</p>
+    </div>
+    <div class="game-options">
+      <label for="reel-set">Reel composition</label>
+      <select id="reel-set">
+        <option value="0">J-heavy reels</option>
+        <option value="1" selected>A–D-heavy reels</option>
+      </select>
+      <span class="game-rtp">THEORETICAL RETURN <strong>≈96%</strong></span>
+    </div>
+    <div class="game-stage">
+      <img
+        class="pharaoh"
+        src="{{ "/assets/img/posts/slotmachine/base_character.png" | relative_url }}"
+        alt="A cat pharaoh holding a crook and scepter"
+      >
+      <div class="board" id="board">
+        <div id="grid" class="grid" role="img" aria-label="Slot machine, ready to spin"></div>
+        <svg id="win-lines" class="win-lines" viewBox="0 0 500 300" preserveAspectRatio="none" aria-hidden="true"></svg>
+      </div>
+    </div>
+    <div class="game-console">
+      <div class="meters" aria-label="Coin meters">
+        <div><span>COINS</span><strong id="balance">100</strong></div>
+        <div><span>BET</span><strong>1</strong></div>
+        <div><span>LAST WIN</span><strong id="last-win">0</strong></div>
+      </div>
+      <div class="game-buttons">
+        <button id="show-paytable" class="game-secondary" aria-expanded="false" aria-controls="game-paytable">Paytable</button>
+        <button id="spin" class="spin-button">SPIN <span>1 COIN</span></button>
+        <button id="auto-spin" class="game-secondary auto-spin" aria-pressed="false" title="Repeat spins until stopped or coins run out">
+          Auto Spin
+        </button>
+        <button id="reset" class="game-secondary">Reset · 100 coins</button>
+      </div>
+      <p id="spin-result" class="result" aria-live="polite">100 virtual coins. All five paylines are active.</p>
+      <div id="win-details" class="win-details" aria-label="Winning lines"></div>
+      <div id="game-paytable" hidden>
+        <div class="table-wrap">
+          <table>
+            <caption>
+              Coins awarded per winning line · longest match only
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Symbol</th>
+                <th scope="col">3 matching</th>
+                <th scope="col">4 matching</th>
+                <th scope="col">5 matching</th>
+              </tr>
+            </thead>
+            <tbody id="game-paytable-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <details class="session">
+        <summary>Session statistics</summary>
+        <dl>
+          <div>
+            <dt>Spins / coins spent</dt>
+            <dd id="spent">0</dd>
+          </div>
+          <div>
+            <dt>Coins returned</dt>
+            <dd id="returned">0</dd>
+          </div>
+          <div>
+            <dt>Net coins</dt>
+            <dd id="net">0</dd>
+          </div>
+          <div>
+            <dt>Observed return</dt>
+            <dd id="session-rtp">—</dd>
+          </div>
+        </dl>
+      </details>
+      <p class="game-disclaimer">Virtual coins only · Each spin costs 1 coin · Changing reels resets the session</p>
+    </div>
+  </section>
+</div>
