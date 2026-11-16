@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Building and Balancing Slot-Like Game Mechanics
-date: 2026-11-15
+date: 2026-11-14
 description: Build a line-based slot machine, balance its RTP, and explore probability, variance, and player bankrolls.
 tags: probability game-design simulation javascript
 categories: mathematics
