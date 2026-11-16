@@ -776,17 +776,9 @@ When designing slot-like mechanics, both are useful. The goal isn't simply to re
 
 ---
 
-_Data and implementation notes_
-
-The two final reel configurations are based on the “high variance” and “small giving” worksheets in `Slotmachine Math.xlsx`. Each contains five circular reels with 50 positions per reel, using the same paytable and paylines.
-
-All theoretical calculations assume uniformly sampled independent reel stops and a total bet of one coin per spin.
-
-The initial configuration and adjustments in Section 4.1 form a constructed example based on the original J-heavy data. The final configuration matches the supplied J-heavy reel strips and paytable.
-
-The interactive experiments are designed for 1,000,000 and 10,000,000 spins. Every spin contributes to the reported statistics; graph points are sampled for display. The page remains responsive while the experiment runs, and Reset cancels a running experiment.
-
 All coins used in the demo are virtual.
+
+This post and its interactive demo are for educational purposes.
 
 </div>
 
