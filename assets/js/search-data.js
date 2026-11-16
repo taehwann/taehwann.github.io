@@ -23,11 +23,11 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/projects/";
           },
-        },{id: "post-building-and-balancing-slot-like-game-mechanics",
+        },{id: "post-how-to-build-and-balance-slot-machine-mechanics-rtp-amp-variance",
         
-          title: "Building and Balancing Slot-Like Game Mechanics",
+          title: "How to Build and Balance Slot Machine Mechanics (RTP &amp; Variance)",
         
-        description: "Build a line-based slot machine, balance its RTP, and explore probability, variance, and player bankrolls.",
+        description: "Learn how to build and balance slot machine-like game mechanics using probability, RTP, variance, and interactive simulations.",
         section: "Posts",
         handler: () => {
           
