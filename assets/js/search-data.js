@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/projects/";
           },
-        },{id: "post-reflections-on-vapor-building-a-3d-smoke-simulator",
+        },{id: "post-building-and-balancing-slot-like-game-mechanics",
+        
+          title: "Building and Balancing Slot-Like Game Mechanics",
+        
+        description: "Build a line-based slot machine, balance its RTP, and explore probability, variance, and player bankrolls.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/building-and-balancing-slot-like-game-mechanics/";
+          
+        },
+      },{id: "post-reflections-on-vapor-building-a-3d-smoke-simulator",
         
           title: "Reflections on Vapor (Building a 3D Smoke Simulator)",
         
