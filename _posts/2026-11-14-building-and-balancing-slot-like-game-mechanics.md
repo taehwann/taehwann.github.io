@@ -150,6 +150,8 @@ These details will become important when calculating the expected return.
 
 {% include slotmachine/demo.liquid %}
 
+> This interactive demo is intended solely for educational purposes. All coins are virtual and have no monetary value. They cannot be purchased, transferred, redeemed, or exchanged for money or prizes. No real-money gambling is involved. The theoretical RTP values apply only to the mathematical models presented in this article.
+
 Try spinning the machine a few times.
 
 The demo starts with 100 virtual coins, and each spin costs one coin.

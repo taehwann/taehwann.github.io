@@ -79,7 +79,7 @@ ninja.data = [
     {%- endfor -%}
   {%- endif -%}
   {%- for collection in site.collections -%}
-    {%- if collection.label != 'posts' -%}
+    {%- if collection.label != 'posts' and collection.output -%}
       {%- assign skip_collection = false -%}
       {%- if collection.label == 'books' -%}
         {%- assign books_page = site.pages | where: "permalink", "/books/" | first -%}
