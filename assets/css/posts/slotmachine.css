@@ -276,7 +276,7 @@
   background: url("../../img/posts/slotmachine/base_reel.png") center / 100% 100% no-repeat;
   filter: drop-shadow(0 8px 14px #0009);
 }
-.slotmachine-post .experiment .grid,
+.slotmachine-post .experiment .slot-reels,
 .slotmachine-post .win-lines {
   position: absolute;
   left: 4.66%;
@@ -284,7 +284,7 @@
   width: 90.24%;
   height: 88.5%;
 }
-.slotmachine-post .experiment .grid {
+.slotmachine-post .experiment .slot-reels {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0;
