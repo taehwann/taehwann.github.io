@@ -1,6 +1,6 @@
 ---
 layout: page
-title: mia — GPU Under the Hood
+title: mia
 description: Exploring GPU compiler behavior and microarchitecture through CUDA and Vulkan, from PTX/SPIR-V to SASS and performance analysis.
 importance: 1
 category: fun
