@@ -67,8 +67,8 @@ ninja.data = [{
             window.location.href = "/blog/2026/huffman-coding/";
           
         },
-      },{id: "projects-mia-gpu-under-the-hood",
-              title: 'mia — GPU Under the Hood',
+      },{id: "projects-mia",
+              title: 'mia',
               description: "Exploring GPU compiler behavior and microarchitecture through CUDA and Vulkan, from PTX/SPIR-V to SASS and performance analysis.",
               section: "Projects",handler: () => {
                   window.location.href = "/projects/mia/";
